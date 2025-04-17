@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
         move_count = 0;
         win = false;
         console.clear()
-        board_html.style.backgroundColor = "transparent";
         history = 'Historia ruchów tej gry:';
         history_label.innerText = history;
         flag = true;
@@ -214,7 +213,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (win == true) {
             score_one_label.innerText = score_one;
             score_two_label.innerText = score_two;
-            board_html.style.backgroundColor = "rgb(152,152,152,0.1)";
         }
     }
 
@@ -287,7 +285,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         //columns
-        // Niedziała blok na środkowy górny po rozpoczęciu środkiem!!!!
         for (i = 0; i <= 2; i++) {
             const column = [board[0][i], board[1][i], board[2][i]];
             let x = getDiffrentField(column, 'O')
