@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         btn.textContent = 'X';
                         board[row][col] = 'X';
 
-                        renderBoardHistory(board, move_count, name_one);
+                        renderBoardHistory(board, move_count, name_two);
                         win_check();
                     }
 
