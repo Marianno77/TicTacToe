@@ -1,0 +1,473 @@
+document.addEventListener('DOMContentLoaded', () => {
+
+    const btns = document.querySelectorAll('.btn');
+    const result_label = document.getElementById('result');
+    const score_one_label = document.getElementById('score-one');
+    const score_two_label = document.getElementById('score-two');
+    const board_html = document.querySelector('.board');
+    const history_label = document.getElementById('history');
+    const player_one = document.getElementById('player_one');
+    const player_two = document.getElementById('player_two');
+    const game_mode_btn = document.getElementById('game_mode_btn');
+    const points_reset_btn = document.getElementById('points_reset_btn');
+
+    let flag = true;
+    let game_mode = true;
+    let name_one = 'Gracz O';
+    let name_two = 'Gracz X';
+    let history = 'Historia ruchów tej gry:';
+    let score_one = 0;
+    let score_two = 0;
+    let win = false;
+    let move_count = 0;
+    let board = [
+        ['', '', ''],
+        ['', '', ''],
+        ['', '', '']
+    ];
+
+    const reset = () => {
+        board = [
+            ['', '', ''],
+            ['', '', ''],
+            ['', '', '']
+        ];
+
+        btns.forEach(btn => {
+            btn.textContent = ''
+        });
+
+        result_label.innerText = '';
+        move_count = 0;
+        win = false;
+        console.clear()
+        board_html.style.backgroundColor = "transparent";
+        history = 'Historia ruchów tej gry:';
+        history_label.innerText = history;
+        flag = true;
+    }
+
+    game_mode_btn.addEventListener('click', () => {
+        if (game_mode != true) {
+            game_mode_btn.textContent = 'Gracz VS Gracz';
+        } else {
+            game_mode_btn.textContent = 'Gracz VS Bot';
+        }
+        reset();
+        game_mode = !game_mode
+    })
+
+    points_reset_btn.addEventListener('click', () => {
+        score_one = 0;
+        score_two = 0;
+        score_one_label.innerText = score_one;
+        score_two_label.innerText = score_two;
+    })
+
+    player_one.addEventListener('input', () => {
+        name_one = player_one.value.trim();
+        if (name_one == '') {
+            name_one = 'Gracz O';
+        }
+        console.log('Gracz 1:', name_one);
+    })
+
+    player_two.addEventListener('input', () => {
+        name_two = player_two.value.trim();
+        if (name_two == '') {
+            name_two = 'Gracz X';
+        }
+        console.log('Gracz 2:', name_two);
+    })
+
+    const reset_btn = document.querySelector('.reset');
+    reset_btn.addEventListener('click', reset);
+
+
+    //main
+    btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            let { row, col } = getGridPosition(btn.id);
+            if (board[row][col] == '' && win == false) {
+                if (game_mode == true) {
+
+                    move_count++;
+
+                    btn.textContent = 'O';
+                    board[row][col] = 'O';
+
+                    renderBoardHistory(board, move_count, name_one);
+                    win_check();
+
+                    if (win == false) {
+                        setTimeout(() => {
+                            move_count++;
+                            ai();
+                            reloadBoard();
+
+                            renderBoardHistory(board, move_count, name_two);
+                            win_check();
+
+                            console.log('Move Count: ', move_count);
+                            if (move_count >= 9 && win === false) {
+                                result_label.innerText = 'Remis';
+                            }
+                        }, 200);
+                    }
+                } else {
+                    if (flag == true) {
+                        move_count++;
+
+                        btn.textContent = 'O';
+                        board[row][col] = 'O';
+
+                        renderBoardHistory(board, move_count, name_one);
+                        win_check();
+                    } else {
+                        move_count++;
+
+                        btn.textContent = 'X';
+                        board[row][col] = 'X';
+
+                        renderBoardHistory(board, move_count, name_one);
+                        win_check();
+                    }
+
+                    if (move_count >= 9 && win === false) {
+                        result_label.innerText = 'Remis';
+                    }
+                }
+
+                flag = !flag;
+                console.log('Board: ', board);
+            }
+        })
+    });
+
+
+    const win_check = () => {
+
+        // Rows check
+        board.forEach(row => {
+            if (row[0] != '') {
+                if (row.every(field => field == row[0])) {
+                    if (row[0] == 'O') {
+                        result_label.innerText = 'Wygrywa ' + name_one + '!';
+                        score_one += 1;
+                    } else {
+                        result_label.innerText = 'Wygrywa ' + name_two + '!';
+                        score_two += 1;
+                    }
+                    win = true;
+                }
+            }
+        });
+
+        // Columns check
+        if (win == false) {
+            for (i = 0; i <= 2; i++) {
+                column = []
+                for (j = 0; j <= 2; j++) {
+                    column.push(board[j][i])
+                }
+                if (column[0] != '') {
+                    if (column.every(field => field == column[0])) {
+                        if (column[0] == 'O') {
+                            result_label.innerText = 'Wygrywa ' + name_one + '!';
+                            score_one += 1;
+                        } else {
+                            result_label.innerText = 'Wygrywa ' + name_two + '!';
+                            score_two += 1;
+                        }
+                        win = true;
+                    }
+                }
+            }
+        }
+
+        // Diagonals check
+        if (win == false) {
+
+            if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[1][1] != '') {
+                if (board[0][0] == 'O') {
+                    result_label.innerText = 'Wygrywa ' + name_one + '!';
+                    score_one += 1;
+                } else {
+                    result_label.innerText = 'Wygrywa ' + name_two + '!';
+                    score_two += 1;
+                }
+                win = true;
+            }
+
+            if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[1][1] != '') {
+                if (board[0][2] == 'O') {
+                    result_label.innerText = 'Wygrywa ' + name_one + '!';
+                    score_one += 1;
+                } else {
+                    result_label.innerText = 'Wygrywa ' + name_two + '!';
+                    score_two += 1;
+                }
+                win = true;
+            }
+        }
+
+        if (win == true) {
+            score_one_label.innerText = score_one;
+            score_two_label.innerText = score_two;
+            board_html.style.backgroundColor = "rgb(152,152,152,0.1)";
+        }
+    }
+
+    //ai moves
+    const ai = () => {
+
+        if (WinMove() == true) {
+            return;
+        }
+        if (BlockMove() == true) {
+            return;
+        }
+
+        if (board[1][1] == '') {
+            board[1][1] = 'X';
+            return;
+        }
+
+        if (playSide() == true) {
+            return;
+        }
+
+        if (playCorner() == true) {
+            return;
+        }
+
+
+
+        reloadBoard();
+    }
+
+    const WinMove = () => {
+        //rows 
+        for (let row of board) {
+            const x = getDiffrentField(row, 'X');
+            if (x !== false) {
+                row[x] = 'X';
+                reloadBoard();
+                return true;
+            }
+        }
+
+        //columns
+        for (i = 0; i <= 2; i++) {
+            const column = [board[0][i], board[1][i], board[2][i]];
+            x = getDiffrentField(column, 'X')
+            if (x != false) {
+                board[x][i] = 'X';
+                reloadBoard();
+                return true;
+            }
+        }
+
+        //Diagonals
+        return MoveDiagonals('X');
+    }
+
+    const BlockMove = () => {
+        console.log("== BLOCK MOVE ==");
+        //rows 
+        for (let row of board) {
+            let x = getDiffrentField(row, 'O');
+            console.log('Checking row:', row, 'Result:', x);
+            if (x !== false) {
+                console.log('Blocking at row index:', x);
+                row[x] = 'X';
+                reloadBoard();
+                return true;
+            }
+        }
+
+        //columns
+        // Niedziała blok na środkowy górny po rozpoczęciu środkiem!!!!
+        for (i = 0; i <= 2; i++) {
+            const column = [board[0][i], board[1][i], board[2][i]];
+            let x = getDiffrentField(column, 'O')
+            console.log('Checking column:', column, 'Result:', x);
+            console.log(`AI: Block at (${x}, ${i})`);
+            if (x !== false && x !== undefined) {
+                board[x][i] = 'X';
+                reloadBoard();
+                return true;
+            }
+        }
+
+        //Diagonals
+        return MoveDiagonals('O');
+    }
+
+    const playCorner = () => {
+        for (let row of board) {
+            if (row != board[1]) {
+                if (row[0] == '') {
+                    row[0] = 'X';
+                    reloadBoard();
+                    return true;
+                } else if (row[2] == '') {
+                    row[2] = 'X';
+                    reloadBoard();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    const playSide = () => {
+        for (let row of board) {
+            if (row == board[1]) {
+                if (row[0] == '') {
+                    row[0] = 'X';
+                    reloadBoard();
+                    return true;
+                } else if (row[2] == '') {
+                    row[2] = 'X';
+                    reloadBoard();
+                    return true;
+                }
+            } else {
+                if (row[1] == '') {
+                    row[1] = 'X';
+                    reloadBoard();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    const reloadBoard = () => {
+        btns.forEach(btn => {
+            let { row, col } = getGridPosition(btn.id);
+            console.log(`Reloading btn ${btn.id} from board[${row}][${col}] = ${board[row][col]}`);
+            btn.textContent = board[row][col];
+        })
+    }
+
+    const MoveDiagonals = (a) => {
+        //one
+        if (board[0][0] == board[1][1] && board[1][1] == a && board[2][2] == '') {
+            board[2][2] = 'X';
+            reloadBoard();
+            return true;
+        }
+
+        if (board[0][0] == board[2][2] && board[2][2] == a && board[1][1] == '') {
+            board[1][1] = 'X';
+            reloadBoard();
+            return true;
+        }
+
+        if (board[1][1] == board[2][2] && board[2][2] == a && board[0][0] == '') {
+            board[0][0] = 'X';
+            reloadBoard();
+            return true;
+        }
+
+        //two
+        if (board[0][2] == board[1][1] && board[1][1] == a && board[2][0] == '') {
+            board[2][0] = 'X';
+            reloadBoard();
+            return true;
+        }
+
+        if (board[0][2] == board[2][0] && board[2][0] == a && board[1][1] == '') {
+            board[1][1] = 'X';
+            reloadBoard();
+            return true;
+        }
+
+        if (board[1][1] == board[2][0] && board[2][0] == a && board[0][2] == '') {
+            board[0][2] = 'X';
+            reloadBoard();
+            return true;
+        }
+
+        return false;
+    }
+
+});
+
+const getDiffrentField = (arr, a) => {
+    console.log('getDiffrentField called with:', arr, 'looking for:', a);
+    if (arr.length != 3) {
+        return false;
+    }
+
+    if (arr[0] == arr[1] && arr[0] == a && arr[2] == '') {
+        return 2;
+    } else if (arr[0] == arr[2] && arr[0] == a && arr[1] == '') {
+        return 1;
+    } else if (arr[1] == arr[2] && arr[1] == a && arr[0] == '') {
+        return 0;
+    } else {
+        return false;
+    }
+}
+
+const getGridPosition = (id) => {
+    const index = parseInt(id) - 1;
+    const row = Math.floor(index / 3);
+    const col = index % 3;
+    return { row, col };
+}
+
+const boardToString = (board) => {
+    return board
+        .map(row =>
+            row
+                .map(cell => (cell === '' ? ' ' : cell).padStart(2, ' ').padEnd(3, ' '))
+                .join('|')
+        )
+        .join('\n');
+};
+
+const renderBoardHistory = (board, count, player) => {
+    const historyContainer = document.getElementById('history');
+
+    const moveWrapper = document.createElement('div');
+    moveWrapper.style.marginBottom = '20px';
+
+    const title = document.createElement('p');
+    title.textContent = `Ruch ${count}`;
+    title.style.fontWeight = 'bold';
+
+    const player_label = document.createElement('p');
+    player_label.textContent = `${player}:`;
+    player_label.style.fontWeight = 'bold';
+
+    const table = document.createElement('table');
+    table.style.borderCollapse = 'collapse';
+    table.style.width = '100%';
+
+    board.forEach((row) => {
+        const tr = document.createElement('tr');
+
+        row.forEach((cell) => {
+            const td = document.createElement('td');
+            td.textContent = cell === '' ? ' ' : cell;
+            td.style.border = '1px solid black';
+            td.style.width = '40px';
+            td.style.height = '40px';
+            td.style.textAlign = 'center';
+            td.style.fontSize = '20px';
+            td.style.padding = '10px';
+            tr.appendChild(td);
+        });
+
+        table.appendChild(tr);
+    });
+
+    moveWrapper.appendChild(title);
+    moveWrapper.appendChild(player_label);
+    moveWrapper.appendChild(table);
+    historyContainer.appendChild(moveWrapper);
+};

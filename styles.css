@@ -1,0 +1,250 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@400..700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Kaushan+Script&display=swap');
+
+html {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: rgb(238, 173, 95);
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: rgb(238, 173, 95);
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+
+    font-family: "Caveat", cursive;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.container {
+    width: 100%;
+}
+
+.header {
+    text-align: center;
+    width: 100%;
+    height: auto;
+    background-color: black;
+    color: #fff;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: 20px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.header img {
+    max-width: 40px;
+}
+
+.main {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+    margin-bottom: 100px;
+}
+
+.board {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-width: 300px;
+    min-height: 300px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+
+}
+
+td {
+    border: 1px solid transparent;
+    position: relative;
+    text-align: center;
+}
+
+tr:nth-child(1) td {
+    border-bottom: 2px solid #333;
+
+}
+
+tr:nth-child(2) td {
+    border-bottom: 2px solid #333;
+}
+
+td:nth-child(1),
+td:nth-child(2) {
+    border-right: 2px solid #333;
+}
+
+tr td:nth-child(3) {
+    border-left: 2px solid #333;
+}
+
+.btn {
+    width: 100px;
+    height: 100px;
+    font-size: 2rem;
+    text-align: center;
+    vertical-align: middle;
+    background-color: transparent;
+    border: 0px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px;
+    cursor: pointer;
+}
+
+@media(max-width:440px) {
+    .btn {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+.reset {
+    margin-top: 50px;
+    width: 200px;
+    height: 50px;
+    font-size: 20px;
+    cursor: pointer;
+    background: transparent;
+    border-top-left-radius: 255px 15px;
+    border-top-right-radius: 15px 225px;
+    border-bottom-right-radius: 225px 15px;
+    border-bottom-left-radius: 15px 255px;
+    border: solid 2px #333;
+    transition: .6s cubic-bezier(.35, 0, 0, 1);
+}
+
+.button button:hover,
+.reset:hover {
+    transform: scale(1.05);
+    background-color: rgb(241, 227, 209);
+}
+
+.result {
+    margin-top: 50px;
+    font-size: 25px;
+    word-spacing: 5px;
+}
+
+.game-holder {
+    width: 80%;
+    gap: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: start;
+}
+
+
+@media (max-width:1245px) {
+    .game-holder {
+        flex-direction: column !important;
+        align-items: center;
+    }
+}
+
+@media(max-width:730px) {
+    .game-holder {
+        width: 100%;
+    }
+}
+
+.player {
+    font-size: 30px;
+    text-align: center;
+    min-width: 300px;
+    line-height: 1.8;
+}
+
+.player input {
+    border: 0px;
+    text-align: center;
+    font-size: 30px;
+    background-color: transparent;
+}
+
+.player input::placeholder {
+    color: #000;
+}
+
+.player input:hover {
+    border: 1px solid #000;
+}
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 40px;
+    background-color: #000;
+    color: #F4F4F4;
+    margin-top: 40px;
+    z-index: 100;
+    font-size: 20px;
+}
+
+.history {
+    font-size: 20px;
+    text-align: center;
+    line-height: 1.5;
+    word-spacing: 1.5;
+    margin-top: 100px;
+}
+
+.button {
+    display: inline-flex;
+    margin-bottom: 100px;
+    gap: 10px;
+}
+
+.button button {
+    padding: 10px;
+    font-size: 20px;
+    width: 150px;
+    height: 50px;
+    background-color: transparent;
+    cursor: pointer;
+    border-top-left-radius: 255px 15px;
+    border-top-right-radius: 15px 225px;
+    border-bottom-right-radius: 225px 15px;
+    border-bottom-left-radius: 15px 255px;
+    border: solid 2px #333;
+    transition: .6s cubic-bezier(.35, 0, 0, 1);
+}
+
+.separator {
+    width: 80%;
+    margin-top: 50px;
+}
+
+.separator hr {
+    border: 0px;
+    border-top: 1px solid #000;
+}
