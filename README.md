@@ -45,3 +45,27 @@ Tic-Tac-Toe game with the option to play in **Player vs Player** or **Player vs 
 - **AI Behavior**: The AI makes moves based on basic strategies such as winning, blocking, and occupying strategic positions (corners, center, sides).
 - **Winner Detection**: Checks whether a player (or AI) has won after each move by analyzing rows, columns, and diagonals.
 - **Move History**: Displays the move history with the exact state of the board after each move.
+
+---
+# Mobile device screenshot
+
+![image](https://github.com/user-attachments/assets/5d31106f-9d8c-4bdc-96ca-59e4db1e20f0)
+
+
+![image](https://github.com/user-attachments/assets/e1b33ae5-9c30-4c5f-91a4-e04021d2bf57)
+
+
+![image](https://github.com/user-attachments/assets/941ca19e-3132-4762-a0d4-083184815ade)
+
+
+# computer screenshot
+
+![image](https://github.com/user-attachments/assets/374bc007-4a7b-4b20-b004-4eacd8a767b9)
+
+
+![image](https://github.com/user-attachments/assets/5d142ede-1ef9-4cbe-91b9-5f94e6199209)
+
+---
+
+
+
