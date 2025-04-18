@@ -10,7 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const player_two = document.getElementById('player_two');
     const game_mode_btn = document.getElementById('game_mode_btn');
     const points_reset_btn = document.getElementById('points_reset_btn');
+    const imposible_btn = document.getElementById('imposible_btn');
+    const rounds_label = document.getElementById('rounds');
 
+    let imposible = false;
     let flag = true;
     let game_mode = true;
     let name_one = 'Gracz O';
@@ -48,11 +51,23 @@ document.addEventListener('DOMContentLoaded', () => {
         flag = true;
     }
 
+    imposible_btn.addEventListener('click', () => {
+        imposible = !imposible;
+        if (imposible == true) {
+            imposible_btn.style.backgroundColor = 'rgba(178, 34, 34, 0.75)';
+        } else {
+            imposible_btn.style.backgroundColor = 'transparent';
+        }
+        reset();
+    })
+
     game_mode_btn.addEventListener('click', () => {
         if (game_mode != true) {
             game_mode_btn.textContent = 'Gracz VS Gracz';
+            imposible_btn.style.display = 'block';
         } else {
             game_mode_btn.textContent = 'Gracz VS Bot';
+            imposible_btn.style.display = 'none';
         }
         reset();
         game_mode = !game_mode
@@ -70,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (name_one == '') {
             name_one = 'Gracz O';
         }
-        console.log('Gracz 1:', name_one);
     })
 
     player_two.addEventListener('input', () => {
@@ -78,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (name_two == '') {
             name_two = 'Gracz X';
         }
-        console.log('Gracz 2:', name_two);
     })
 
     const reset_btn = document.querySelector('.reset');
@@ -93,6 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (game_mode == true) {
 
                     move_count++;
+                    if (move_count < 10) {
+                        rounds_label.textContent = `Runda: ${move_count}`;
+                    }
 
                     btn.textContent = 'O';
                     board_prev = cloneBoard(board);
@@ -104,6 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (win == false) {
                         setTimeout(() => {
                             move_count++;
+                            if (move_count < 10) {
+                                rounds_label.textContent = `Runda: ${move_count}`;
+                            }
                             board_prev = cloneBoard(board);
                             ai();
                             reloadBoard();
@@ -111,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             renderBoardHistory(board, move_count, name_two, board_prev);
                             win_check();
 
-                            console.log('Move Count: ', move_count);
                             if (move_count >= 9 && win === false) {
                                 result_label.innerText = 'Remis';
                             }
@@ -122,17 +140,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         move_count++;
 
                         btn.textContent = 'O';
+                        board_prev = cloneBoard(board);
                         board[row][col] = 'O';
 
-                        renderBoardHistory(board, move_count, name_one);
+                        renderBoardHistory(board, move_count, name_one, board_prev);
                         win_check();
                     } else {
                         move_count++;
 
                         btn.textContent = 'X';
+                        board_prev = cloneBoard(board);
                         board[row][col] = 'X';
 
-                        renderBoardHistory(board, move_count, name_two);
+                        renderBoardHistory(board, move_count, name_two, board_prev);
                         win_check();
                     }
 
@@ -227,20 +247,43 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        if (imposible == true) {
+            if (winSplit() == true) {
+                return;
+            }
+
+            if (blockSplit() == true) {
+                return;
+            }
+        }
+
         if (board[1][1] == '') {
             board[1][1] = 'X';
             return;
         }
-
-        if (playSide() == true) {
-            return;
-        }
-
-        if (playCorner() == true) {
+        if (playOpositeCorner() == true) {
             return;
         }
 
 
+        if (imposible == true) {
+            if (playCorner() == true) {
+                return;
+            }
+            if (playSide() == true) {
+                return;
+            }
+
+        } else {
+
+            if (playSide() == true) {
+                return;
+            }
+            if (playCorner() == true) {
+                return;
+            }
+
+        }
 
         reloadBoard();
     }
@@ -272,13 +315,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const BlockMove = () => {
-        console.log("== BLOCK MOVE ==");
         //rows 
         for (let row of board) {
             let x = getDiffrentField(row, 'O');
-            console.log('Checking row:', row, 'Result:', x);
             if (x !== false && x !== undefined) {
-                console.log('Blocking at row index:', x);
                 row[x] = 'X';
                 reloadBoard();
                 return true;
@@ -289,8 +329,6 @@ document.addEventListener('DOMContentLoaded', () => {
         for (i = 0; i <= 2; i++) {
             const column = [board[0][i], board[1][i], board[2][i]];
             let x = getDiffrentField(column, 'O')
-            console.log('Checking column:', column, 'Result:', x);
-            console.log(`AI: Block at (${x}, ${i})`);
             if (x !== false && x !== undefined) {
                 board[x][i] = 'X';
                 reloadBoard();
@@ -345,7 +383,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const reloadBoard = () => {
         btns.forEach(btn => {
             let { row, col } = getGridPosition(btn.id);
-            console.log(`Reloading btn ${btn.id} from board[${row}][${col}] = ${board[row][col]}`);
             btn.textContent = board[row][col];
         })
     }
@@ -392,10 +429,118 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
     }
 
+    const playOpositeCorner = () => {
+        if (board[0][0] == 'O' && board[2][2] == '') {
+            board[2][2] = 'X';
+            reloadBoard()
+            return true;
+        } else if (board[0][2] == 'O' && board[2][0] == '') {
+            board[2][0] = 'X';
+            reloadBoard()
+            return true;
+        } else if (board[2][2] == 'O' && board[0][0] == '') {
+            board[0][0] = 'X';
+            reloadBoard()
+            return true;
+        } else if (board[2][0] == 'O' && board[0][2] == '') {
+            board[0][2] = 'X';
+            reloadBoard()
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //imposible mode 
+
+    const winSplit = () => {
+        let rowsWithOneSign = [];
+        let colsWithOneSign = [];
+        for (let i = 0; i < board.length; i++) {
+            if (getRowWithOneSign(board[i], 'X') == true) {
+                rowsWithOneSign.push(i);
+            }
+        }
+
+        for (i = 0; i <= 2; i++) {
+            const column = [board[0][i], board[1][i], board[2][i]];
+            if (getRowWithOneSign(column, 'X') == true) {
+                colsWithOneSign.push(i);
+            }
+        }
+
+        for (const row of rowsWithOneSign) {
+            for (const col of colsWithOneSign) {
+                if (board[row][col] === '') {
+                    board[row][col] = 'X';
+                    reloadBoard();
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    const blockSplit = () => {
+        let rowsWithOneSign = [];
+        let colsWithOneSign = [];
+        for (let i = 0; i < board.length; i++) {
+            if (getRowWithOneSign(board[i], 'O') == true) {
+                rowsWithOneSign.push(i);
+            }
+        }
+
+        for (i = 0; i <= 2; i++) {
+            const column = [board[0][i], board[1][i], board[2][i]];
+            if (getRowWithOneSign(column, 'O') == true) {
+                colsWithOneSign.push(i);
+            }
+        }
+
+        for (const row of rowsWithOneSign) {
+            for (const col of colsWithOneSign) {
+                if (board[row][col] === '') {
+                    if (row != 0) {
+                        if (board[row - 1][col] == '') {
+                            board[row - 1][col] = 'X';
+                            reloadBoard();
+                            return true;
+                        }
+
+                    } else if (col != 0) {
+                        if (board[row][col - 1] == '') {
+                            board[row][col - 1] = 'X';
+                            reloadBoard();
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
 });
 
+const getRowWithOneSign = (arr, a) => {
+    if (arr.length != 3) {
+        return false;
+    }
+
+    if (arr[0] == a && arr[1] == '' && arr[2] == '') {
+        return true;
+    } else if (arr[0] == '' && arr[1] == a && arr[2] == '') {
+        return true;
+    } else if (arr[0] == '' && arr[1] == '' && arr[2] == a) {
+        return true;
+    } else {
+        return false
+    }
+}
+
 const getDiffrentField = (arr, a) => {
-    console.log('getDiffrentField called with:', arr, 'looking for:', a);
     if (arr.length != 3) {
         return false;
     }
@@ -429,6 +574,9 @@ const boardToString = (board) => {
 };
 
 const renderBoardHistory = (board, count, player, board_prev) => {
+    if (count > 9) {
+        return;
+    }
     const historyContainer = document.getElementById('history');
 
     const moveWrapper = document.createElement('div');
@@ -447,7 +595,6 @@ const renderBoardHistory = (board, count, player, board_prev) => {
     table.style.width = '100%';
 
     const changedCell = checkUpdateBoard(board, board_prev);
-    console.log('CHANGED CELL:', changedCell);
     board.forEach((row, i) => {
         const tr = document.createElement('tr');
 
@@ -490,7 +637,3 @@ const checkUpdateBoard = (board, board_prev) => {
 const cloneBoard = (board) => {
     return board.map(row => [...row]);
 };
-
-const something = (x, board) => {
-
-}

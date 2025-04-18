@@ -136,7 +136,7 @@ tr td:nth-child(3) {
     transition: .6s cubic-bezier(.35, 0, 0, 1);
 }
 
-.button button:hover,
+.buttons button:hover,
 .reset:hover {
     transform: scale(1.05);
     background-color: rgb(241, 227, 209);
@@ -218,13 +218,17 @@ tr td:nth-child(3) {
     margin-top: 100px;
 }
 
-.button {
+.buttons {
     display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
     margin-bottom: 100px;
     gap: 10px;
 }
 
-.button button {
+.buttons button {
+    overflow: hidden;
     padding: 10px;
     font-size: 20px;
     width: 150px;
@@ -247,4 +251,9 @@ tr td:nth-child(3) {
 .separator hr {
     border: 0px;
     border-top: 1px solid #000;
+}
+
+.rounds {
+    margin-bottom: 50px;
+    font-size: 25px;
 }
