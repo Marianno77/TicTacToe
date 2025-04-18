@@ -26,6 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ['', '', '']
     ];
 
+    let board_prev;
+
     const reset = () => {
         board = [
             ['', '', ''],
@@ -93,18 +95,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     move_count++;
 
                     btn.textContent = 'O';
+                    board_prev = cloneBoard(board);
                     board[row][col] = 'O';
 
-                    renderBoardHistory(board, move_count, name_one);
+                    renderBoardHistory(board, move_count, name_one, board_prev);
                     win_check();
 
                     if (win == false) {
                         setTimeout(() => {
                             move_count++;
+                            board_prev = cloneBoard(board);
                             ai();
                             reloadBoard();
 
-                            renderBoardHistory(board, move_count, name_two);
+                            renderBoardHistory(board, move_count, name_two, board_prev);
                             win_check();
 
                             console.log('Move Count: ', move_count);
@@ -165,10 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Columns check
         if (win == false) {
             for (i = 0; i <= 2; i++) {
-                column = []
-                for (j = 0; j <= 2; j++) {
-                    column.push(board[j][i])
-                }
+                const column = [board[0][i], board[1][i], board[2][i]];
                 if (column[0] != '') {
                     if (column.every(field => field == column[0])) {
                         if (column[0] == 'O') {
@@ -248,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
         //rows 
         for (let row of board) {
             const x = getDiffrentField(row, 'X');
-            if (x !== false) {
+            if (x !== false && x !== undefined) {
                 row[x] = 'X';
                 reloadBoard();
                 return true;
@@ -259,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (i = 0; i <= 2; i++) {
             const column = [board[0][i], board[1][i], board[2][i]];
             x = getDiffrentField(column, 'X')
-            if (x != false) {
+            if (x !== false && x !== undefined) {
                 board[x][i] = 'X';
                 reloadBoard();
                 return true;
@@ -276,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let row of board) {
             let x = getDiffrentField(row, 'O');
             console.log('Checking row:', row, 'Result:', x);
-            if (x !== false) {
+            if (x !== false && x !== undefined) {
                 console.log('Blocking at row index:', x);
                 row[x] = 'X';
                 reloadBoard();
@@ -427,7 +428,7 @@ const boardToString = (board) => {
         .join('\n');
 };
 
-const renderBoardHistory = (board, count, player) => {
+const renderBoardHistory = (board, count, player, board_prev) => {
     const historyContainer = document.getElementById('history');
 
     const moveWrapper = document.createElement('div');
@@ -445,10 +446,12 @@ const renderBoardHistory = (board, count, player) => {
     table.style.borderCollapse = 'collapse';
     table.style.width = '100%';
 
-    board.forEach((row) => {
+    const changedCell = checkUpdateBoard(board, board_prev);
+    console.log('CHANGED CELL:', changedCell);
+    board.forEach((row, i) => {
         const tr = document.createElement('tr');
 
-        row.forEach((cell) => {
+        row.forEach((cell, j) => {
             const td = document.createElement('td');
             td.textContent = cell === '' ? ' ' : cell;
             td.style.border = '1px solid black';
@@ -458,6 +461,10 @@ const renderBoardHistory = (board, count, player) => {
             td.style.fontSize = '20px';
             td.style.padding = '10px';
             tr.appendChild(td);
+
+            if (changedCell && changedCell.row === i && changedCell.col === j) {
+                td.style.backgroundColor = 'orange';
+            }
         });
 
         table.appendChild(tr);
@@ -468,3 +475,22 @@ const renderBoardHistory = (board, count, player) => {
     moveWrapper.appendChild(table);
     historyContainer.appendChild(moveWrapper);
 };
+
+const checkUpdateBoard = (board, board_prev) => {
+    for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[i].length; j++) {
+            if (board[i][j] !== board_prev[i][j]) {
+                return { row: i, col: j };
+            }
+        }
+    }
+    return null;
+}
+
+const cloneBoard = (board) => {
+    return board.map(row => [...row]);
+};
+
+const something = (x, board) => {
+
+}
