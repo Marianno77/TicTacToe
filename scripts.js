@@ -49,6 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
         history = 'Historia ruchów tej gry:';
         history_label.innerText = history;
         flag = true;
+        rounds_label.textContent = `Runda: ${move_count + 1}`;
+
     }
 
     imposible_btn.addEventListener('click', () => {
@@ -106,8 +108,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (game_mode == true) {
 
                     move_count++;
-                    if (move_count < 10) {
-                        rounds_label.textContent = `Runda: ${move_count}`;
+                    if (move_count <= 8) {
+                        rounds_label.textContent = `Runda: ${move_count + 1}`;
+                    } else {
+                        rounds_label.textContent = `Runda: 9`;
                     }
 
                     btn.textContent = 'O';
@@ -120,8 +124,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (win == false) {
                         setTimeout(() => {
                             move_count++;
-                            if (move_count < 10) {
-                                rounds_label.textContent = `Runda: ${move_count}`;
+                            if (move_count <= 8) {
+                                rounds_label.textContent = `Runda: ${move_count + 1}`;
+                            } else {
+                                rounds_label.textContent = `Runda: 9`;
                             }
                             board_prev = cloneBoard(board);
                             ai();
@@ -138,7 +144,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     if (flag == true) {
                         move_count++;
-
+                        if (move_count <= 8) {
+                            rounds_label.textContent = `Runda: ${move_count + 1}`;
+                        } else {
+                            rounds_label.textContent = `Runda: 9`;
+                        }
                         btn.textContent = 'O';
                         board_prev = cloneBoard(board);
                         board[row][col] = 'O';
@@ -147,7 +157,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         win_check();
                     } else {
                         move_count++;
-
+                        if (move_count <= 8) {
+                            rounds_label.textContent = `Runda: ${move_count + 1}`;
+                        } else {
+                            rounds_label.textContent = `Runda: 9`;
+                        }
                         btn.textContent = 'X';
                         board_prev = cloneBoard(board);
                         board[row][col] = 'X';
